@@ -79,7 +79,7 @@ for row in directorySheet.iter_rows():
 			links = set(href for href in links if not badSubString in href)
 
 		#add links_to set
-		dataDict[resourceToken]['links_to'] = list(links)
+		dataDict[resourceToken]['links_to'] = [rsrcTokenDict.getToken(link) for link in links]
 		#for each link in div#mw-content-text but not in table class~=navbox
 		for link in links:
 			linkToken = rsrcTokenDict.getToken(link)
