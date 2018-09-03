@@ -1,0 +1,5 @@
+cat_tokens_*.json
+cat_and_link_*.json
+*.txt
+saved_soup
+.vscode
