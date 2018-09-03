@@ -7,24 +7,23 @@ def getSoup(url):
 		return bs4.BeautifulSoup(res.content,features='html5lib')
 	except Exception as exc:
 		print('Problem requesting ' + url)
-	return null
+	return None
 
 class TokenDict:
 	'Class doc string accessible via classname.__doc__'
-	myDict = {}
 	
 	def __init__(self):
-		myDict = {}
+		self.myDict = {}
 
-	def getToken(key):
+	def getToken(self, key):
 		token = -1
-		if key in myDict:
-			token = myDict[key]['token']
-			myDict[key]['accesses'] += 1
+		if key in self.myDict:
+			token = self.myDict[key]['token']
+			self.myDict[key]['accesses'] += 1
 		else:
-			token = len(myDict)
-			myDict[key] = {}
-			myDict[key]['token'] = token
-			myDict[key]['accesses'] += 1
+			token = len(self.myDict)
+			self.myDict[key] = {}
+			self.myDict[key]['token'] = token
+			self.myDict[key]['accesses'] += 1
 		return token
 
