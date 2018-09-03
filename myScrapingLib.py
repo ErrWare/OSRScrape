@@ -24,6 +24,6 @@ class TokenDict:
 			token = len(self.myDict)
 			self.myDict[key] = {}
 			self.myDict[key]['token'] = token
-			self.myDict[key]['accesses'] += 1
+			self.myDict[key]['accesses'] = 1
 		return token
 

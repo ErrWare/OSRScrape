@@ -3,3 +3,5 @@ cat_and_link_*.json
 *.txt
 saved_soup
 .vscode
+__pycache__
+rsrc_tokens_dict_*.json

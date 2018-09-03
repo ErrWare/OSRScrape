@@ -1,6 +1,12 @@
 import requests, bs4, json
-from myScrapingLib import getSoup
+from myScrapingLib import getSoup, TokenDict
 import openpyxl as xl
+
+# Our data and token dicts
+dataDict = {}
+rsrcTokenDict = TokenDict()
+catTokenDict = TokenDict()
+
 def getCategories(soup):
 	categories = soup.find('ul',class_='categories')
 	if categories is None:
@@ -10,19 +16,24 @@ def getCategories(soup):
 		categories = [a.attrs['href'] for a in categories.select('a')]
 		return set(categories)
 
+'''
 catTokenDict = {}
 def getToken(category):
 	if not category in catTokenDict:
 		catTokenDict[category] = len(catTokenDict)
 	return catTokenDict[category]
-
+'''
 count = 0
 def jsonDump():
 	with open('cat_and_link_'+str(count)+'.json', 'w') as outfile:
 		json.dump(dataDict, outfile)
 			
-	with open('cat_tokens_'+str(count)+'.json', 'w') as outfile:
-		json.dump(catTokenDict, outfile)
+	with open('cat_tokens_dict_'+str(count)+'.json', 'w') as outfile:
+		json.dump(getattr(catTokenDict,'myDict'), outfile)
+
+	with open('rsrc_tokens_dict_'+str(count)+'.json', 'w') as outfile:
+		json.dump(getattr(rsrcTokenDict,'myDict'), outfile)
+
 
 wikiNS = 'http://oldschoolrunescape.wikia.com'
 WORKBOOK_NAME = 'ITEMS'
@@ -32,18 +43,17 @@ TYPE_SCRAPED = 'ITEM'
 
 directorySheet = wb[TYPE_SCRAPED+'_URIs']
 
-dataDict = {}
-
 
 #for each item
 for row in directorySheet.iter_rows():
 	for cell in row:
 		print('Doing: ' + cell.value)
 		resourceName = cell.value.replace(wikiNS,'')
-		dataDict[resourceName] = {}
+		resourceToken = rsrcTokenDict.getToken(resourceName)
+		dataDict[resourceToken] = {}
 		soup = getSoup(cell.value)
 		#add categories set
-		dataDict[resourceName]['categories'] = list(getCategories(soup))
+		dataDict[resourceToken]['categories'] = [catTokenDict.getToken(cat) for cat in getCategories(soup)]
 
 		mainArticle = soup.find(id='mw-content-text')
 		# Don't want these bad boys. Not really relevant to main article
@@ -51,22 +61,30 @@ for row in directorySheet.iter_rows():
 		for badTable in badTables:
 			badTable.decompose()
 		# To destroy: div.messagebox
-		# To destroy: span#trivia - destroy all ul siblings below it
-		# To destroy: href w/ ?action=
-		# To destroy: href w/ Exchange:
-		# To destroy: href w/ Update:
-		# To destroy: href w/ Poll:
-
+		messageBoxes = mainArticle.select('div.messagebox')
+		for messageBox in messageBoxes:
+			messageBox.decompose()
+		# To destroy: span#trivia - destroy all ul below it
+		triviaSpan = mainArticle.find(id='Trivia')
+		if not triviaSpan is None:
+			for ul in triviaSpan.parent.find_next_siblings('ul'):
+				ul.decompose()
 
 		# Only articles relevant to text are those without a class attribute
 		# class attribute denotes an image, we can do away with that.
 		links = set(a.attrs['href'] for a in mainArticle.select('a[href]') if not 'class' in a.attrs)
+		
+		badSubStrings = ['?action=','Exchange:','Update:','Poll:']
+		for badSubString in badSubStrings:
+			links = set(href for href in links if not badSubString in href)
+
 		#add links_to set
-		dataDict[resourceName]['links_to'] = list(links)
+		dataDict[resourceToken]['links_to'] = list(links)
 		#for each link in div#mw-content-text but not in table class~=navbox
 		for link in links:
-			if not link in dataDict:
-				dataDict[link] = {}
+			linkToken = rsrcTokenDict.getToken(link)
+			if not linkToken in dataDict:
+				dataDict[linkToken] = {}
 				#if not yet in dataDict
 				linkCats = set([])
 				if link.startswith('/wiki/'):
@@ -75,12 +93,14 @@ for row in directorySheet.iter_rows():
 					linkCats = getCategories(linkSoup)
 				else:
 					linkCats = set(['foreign'])
-				dataDict[link]['categories'] = list(getToken(cat) for cat in linkCats)
+				dataDict[linkToken]['categories'] = [catTokenDict.getToken(cat) for cat in linkCats]
 
 		print('Linked out to ' + str(len(links)) + ' resources')
 		count = count + 1
-		if count % 150 == 0:
+		if count % 500 == 0 or count == 10:
 			jsonDump()
+
+jsonDump()
 
 
 		
