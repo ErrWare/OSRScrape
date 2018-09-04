@@ -2,10 +2,14 @@ import requests, bs4, json
 from myScrapingLib import getSoup, TokenDict
 import openpyxl as xl
 
+#for when cat_and_link fails....
+
+CONT_ROW = 5000
+
 # Our data and token dicts
-dataDict = {}
-rsrcTokenDict = TokenDict()
-catTokenDict = TokenDict()
+dataDict = json.load(open('cat_and_link_'+str(CONT_ROW)+'.json','r'))
+rsrcTokenDict = TokenDict(dic=json.load(open('rsrc_tokens_dict_'+str(CONT_ROW)+'.json','r')))
+catTokenDict = TokenDict(dic=json.load(open('cat_tokens_dict_'+str(CONT_ROW)+'.json','r')))
 
 def getCategories(soup):
 	categories = soup.find('ul',class_='categories')
@@ -23,7 +27,7 @@ def getToken(category):
 		catTokenDict[category] = len(catTokenDict)
 	return catTokenDict[category]
 '''
-count = 0
+count = CONT_ROW
 def jsonDump():
 	with open('cat_and_link_'+str(count)+'.json', 'w') as outfile:
 		json.dump(dataDict, outfile)
@@ -47,7 +51,7 @@ directorySheet = wb[TYPE_SCRAPED+'_URIs']
 ITEMS_TO_SKIP = ['/wiki/Snakeskin']
 
 #for each item
-for row in directorySheet.iter_rows():
+for row in directorySheet.iter_rows(min_row=CONT_ROW+1):
 	for cell in row:
 		print('Doing: ' + cell.value)
 		resourceName = cell.value.replace(wikiNS,'')
@@ -102,7 +106,7 @@ for row in directorySheet.iter_rows():
 
 		print('Linked out to ' + str(len(links)) + ' resources')
 		count = count + 1
-		if count % 500 == 0 or count == 10:
+		if count % 50 == 0 or count == 10:
 			jsonDump()
 
 jsonDump()
