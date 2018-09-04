@@ -12,8 +12,8 @@ def getSoup(url):
 class TokenDict:
 	'Class doc string accessible via classname.__doc__'
 	
-	def __init__(self):
-		self.myDict = {}
+	def __init__(self, dic={}):
+		self.myDict = dic
 
 	def getToken(self, key):
 		token = -1
