@@ -12,11 +12,11 @@ def getSoup(url):
 class TokenDict:
 	'Class doc string accessible via classname.__doc__'
 	
-	def __init__(self):
-		self.myDict = {}
+	def __init__(self, dic={}):
+		self.myDict = dic
 
 	def getToken(self, key):
-		token = -1
+		token = str(-1)
 		if key in self.myDict:
 			token = self.myDict[key]['token']
 			self.myDict[key]['accesses'] += 1
@@ -25,5 +25,5 @@ class TokenDict:
 			self.myDict[key] = {}
 			self.myDict[key]['token'] = token
 			self.myDict[key]['accesses'] = 1
-		return token
+		return str(token)
 
