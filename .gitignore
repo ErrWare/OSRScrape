@@ -1,7 +1,7 @@
 cat_tokens_*.json
 cat_and_link_*.json
+rsrc_tokens_dict_*.json
 *.txt
 saved_soup
 .vscode
 __pycache__
-rsrc_tokens_dict_*.json
