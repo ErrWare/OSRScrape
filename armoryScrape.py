@@ -2,15 +2,7 @@ import webbrowser
 import bs4
 import requests
 import openpyxl as xl
-
-def getSoup(url):
-	res = requests.get(url)
-	try:
-		res.raise_for_status()
-		return bs4.BeautifulSoup(res.content,features='html5lib')
-	except Exception as exc:
-		print('Problem requesting ' + url)
-	return null
+from myScrapingLib import getSoup
 
 def headCellName(headCell):
 	colRep = headCell.find('a')
