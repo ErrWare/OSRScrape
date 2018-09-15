@@ -1,13 +1,32 @@
+# For all items:
+#	record categories
+#	record out links as resources
+# For all categories:
+#	store as token in cat_tokens_dict_COUNT.json
+#	track reference count
+# For all resources:
+#	store as token in rsrc_tokens_dict_COUNT.json
+#	track reference count
+
+
+
 import requests, bs4, json
 from myScrapingLib import getSoup, TokenDict
 import openpyxl as xl
 
 # Our data and token dicts
+# For each item and resource: keep track of categories
+# For each item: keep track of linked resources
 dataDict = {}
+# tokenizes resources and tracks accesses
 rsrcTokenDict = TokenDict()
+# tokenizes categories and tracks accesses
 catTokenDict = TokenDict()
+
+# urls for which normal execution failed
 failures = []
 
+# gets the categories of some osrs wiki page
 def getCategories(soup):
 	categories = soup.find('ul',class_='categories')
 	if categories is None:
@@ -53,11 +72,13 @@ for row in directorySheet.iter_rows():
 			print('Doing: ' + cell.value)
 			resourceName = cell.value.replace(wikiNS,'')
 			print(resourceName)
-			#if resourceName in ITEMS_TO_SKIP:
-			#	continue
+			# Tokenize subject resource
 			resourceToken = rsrcTokenDict.getToken(resourceName)
+			# give it an entry in our dataDict
+				# in some cases over-writes previous entry - negligible
 			dataDict[resourceToken] = {}
 			soup = getSoup(cell.value)
+
 			#add categories set
 			dataDict[resourceToken]['categories'] = [catTokenDict.getToken(cat) for cat in getCategories(soup)]
 
@@ -72,24 +93,28 @@ for row in directorySheet.iter_rows():
 				messageBox.decompose()
 			# To destroy: span#trivia - destroy all ul below it
 			triviaSpan = mainArticle.find(id='Trivia')
-			if not triviaSpan is None:
+			if triviaSpan is not None:
 				for ul in triviaSpan.parent.find_next_siblings('ul'):
 					ul.decompose()
 
 			# Only articles relevant to text are those without a class attribute
 			# class attribute denotes an image, we can do away with that.
-			links = set(a.attrs['href'] for a in mainArticle.select('a[href]') if not 'class' in a.attrs)
+			links = set(a.attrs['href'] for a in mainArticle.select('a[href]') if 'class' not in a.attrs)
 			
+			# these substrings are found in hrefs we are uninterested in
 			badSubStrings = ['?action=','Exchange:','Update:','Poll:']
 			for badSubString in badSubStrings:
-				links = set(href for href in links if not badSubString in href)
+				links = set(href for href in links if badSubString not in href)
 
 			#add links_to set
 			dataDict[resourceToken]['links_to'] = [rsrcTokenDict.getToken(link) for link in links]
-			#for each link in div#mw-content-text but not in table class~=navbox
+			
+			#for each link of interest
 			for link in links:
 				linkToken = rsrcTokenDict.getToken(link)
-				if not linkToken in dataDict:
+				# track categories of resource if not yet tracked
+				# otherwise we won't be able to categorize non-item resources
+				if linkToken not in dataDict:
 					dataDict[linkToken] = {}
 					#if not yet in dataDict
 					linkCats = set([])
