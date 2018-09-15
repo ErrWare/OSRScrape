@@ -1,3 +1,5 @@
+# Scrape all equipment to new excel document
+# Outputs OSRS_ARMORY.xlsx
 import webbrowser
 import bs4
 import requests
