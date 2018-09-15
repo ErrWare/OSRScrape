@@ -9,6 +9,7 @@ def getSoup(url):
 		print('Problem requesting ' + url)
 	return None
 
+# Dictionary translates keys to tokens, tracks lookups of each key
 class TokenDict:
 	'Class doc string accessible via classname.__doc__'
 	
