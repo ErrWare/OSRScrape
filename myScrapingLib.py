@@ -11,10 +11,13 @@ def getSoup(url):
 
 # Dictionary translates keys to tokens, tracks lookups of each key
 class TokenDict:
-	'Class doc string accessible via classname.__doc__'
+	'Class doc string accessible via classname.__doc__ (dunders make bold)'
 	
+	# need to copy dic - on default dic is shared between objects
+	# I think the default value is interpreted once and saved as a
+	# reference to the initial empty dict
 	def __init__(self, dic={}):
-		self.myDict = dic
+		self.myDict = dic.copy()
 
 	def getToken(self, key):
 		token = str(-1)

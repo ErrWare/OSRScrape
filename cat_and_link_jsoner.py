@@ -45,12 +45,13 @@ def jsonDump():
 		json.dump(dataDict, outfile)
 			
 	with open('cat_tokens_dict_'+str(count)+'.json', 'w') as outfile:
+		print('Dumped cat_tokens_dict_'+str(count))
 		json.dump(getattr(catTokenDict,'myDict'), outfile)
 
 	with open('rsrc_tokens_dict_'+str(count)+'.json', 'w') as outfile:
 		json.dump(getattr(rsrcTokenDict,'myDict'), outfile)
 
-	with open('cat_and_link_failures.json', 'w') as outfile:
+	with open('cat_and_link_failures2.json', 'w') as outfile:
 		json.dump(failures, outfile)
 
 
@@ -71,7 +72,7 @@ for row in directorySheet.iter_rows():
 		try:
 			print('Doing: ' + cell.value)
 			resourceName = cell.value.replace(wikiNS,'')
-			print(resourceName)
+			#print(resourceName)
 			# Tokenize subject resource
 			resourceToken = rsrcTokenDict.getToken(resourceName)
 			# give it an entry in our dataDict
@@ -102,14 +103,14 @@ for row in directorySheet.iter_rows():
 			links = set(a.attrs['href'] for a in mainArticle.select('a[href]') if 'class' not in a.attrs)
 			
 			# these substrings are found in hrefs we are uninterested in
-			badSubStrings = ['?action=','Exchange:','Update:','Poll:']
+			badSubStrings = ['?action=',':']	#'Exchange:','Update:','Poll:']
 			for badSubString in badSubStrings:
 				links = set(href for href in links if badSubString not in href)
 
 			#add links_to set
 			dataDict[resourceToken]['links_to'] = [rsrcTokenDict.getToken(link) for link in links]
 			
-			#for each link of interest
+			# Categorize unfamiliar outlinks
 			for link in links:
 				linkToken = rsrcTokenDict.getToken(link)
 				# track categories of resource if not yet tracked
@@ -120,7 +121,7 @@ for row in directorySheet.iter_rows():
 					linkCats = set([])
 					if link.startswith('/wiki/'):
 						linkSoup = getSoup(wikiNS + link)
-						print('Getting cats from: ' + link)
+						#print('Getting cats from: ' + link)
 						linkCats = getCategories(linkSoup)
 					else:
 						linkCats = set(['foreign'])
@@ -130,7 +131,8 @@ for row in directorySheet.iter_rows():
 			count = count + 1
 			if count % 500 == 0 or count == 10:
 				jsonDump()
-		
+		except KeyboardInterrupt as e:
+			exit()
 		except:
 			failures.append(cell.value)
 
