@@ -11,7 +11,7 @@
 
 
 import requests, bs4, json
-from myScrapingLib import getSoup, TokenDict
+from myScrapingLib import getSoup, TokenDict, cleanArticle, getCategories
 import openpyxl as xl
 
 # Our data and token dicts
@@ -25,16 +25,6 @@ catTokenDict = TokenDict()
 
 # urls for which normal execution failed
 failures = []
-
-# gets the categories of some osrs wiki page
-def getCategories(soup):
-	categories = soup.find('ul',class_='categories')
-	if categories is None:
-		print('No cats')
-		return set([])
-	else:
-		categories = [a.attrs['href'] for a in categories.select('a')]
-		return set(categories)
 
 # Amount items counted
 count = 0
@@ -83,7 +73,8 @@ for row in directorySheet.iter_rows():
 			#add categories set
 			dataDict[resourceToken]['categories'] = [catTokenDict.getToken(cat) for cat in getCategories(soup)]
 
-			mainArticle = soup.find(id='mw-content-text')
+			mainArticle = getArticle(soup)
+			'''
 			# Don't want these bad boys. Not really relevant to main article
 			badTables = mainArticle.find_all('table',class_='navbox')
 			for badTable in badTables:
@@ -97,7 +88,7 @@ for row in directorySheet.iter_rows():
 			if triviaSpan is not None:
 				for ul in triviaSpan.parent.find_next_siblings('ul'):
 					ul.decompose()
-
+					'''
 			# Only articles relevant to text are those without a class attribute
 			# class attribute denotes an image, we can do away with that.
 			links = set(a.attrs['href'] for a in mainArticle.select('a[href]') if 'class' not in a.attrs)
