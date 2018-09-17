@@ -5,3 +5,4 @@ rsrc_tokens_dict_*.json
 saved_soup
 .vscode
 __pycache__
+CR*
