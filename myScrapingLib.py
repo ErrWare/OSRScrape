@@ -1,4 +1,7 @@
 import requests, bs4
+import os
+import inspect
+import json
 
 def getSoup(url):
 	res = requests.get(url)
@@ -71,3 +74,38 @@ def getCategories(soup):
 	else:
 		categories = [a.attrs['href'] for a in categories.select('a')]
 		return set(categories)
+
+
+# Load token dicts
+ASSETS_FOLDER_NAME = 'assets'
+MSL_ASSETS_FOLDER_NAME = 'mslAssets'
+MY_DIR_NAME = os.path.dirname(inspect.stack()[0][1])
+msl_assets_folder = os.path.join(MY_DIR_NAME,ASSETS_FOLDER_NAME,MSL_ASSETS_FOLDER_NAME)
+if os.path.isdir(msl_assets_folder):
+	files = os.listdir(msl_assets_folder)
+	rt_dicts = [f for f in files if f.startswith('rsrc_tokens_dict')]
+	ct_dicts = [f for f in files if f.startswith('cat_tokens_dict')]
+	
+	if len(rt_dicts) > 0:
+		rt_dict = rt_dicts[0]
+		for candidate_dict in rt_dicts[1:]
+			if os.path.getsize( os.path.join(msl_assets_folder, rt_dict) ) <
+			   os.path.getsize( os.path.join(msl_assets_folder,candidate_dict) ):
+				rt_dict = candidate_dict
+		rt_dict = json.load(open(os.path.join(msl_assets_folder,rt_dict)))
+		rt_dict = TokenDict(rt_dict)
+	else:
+		print('myScrapingLib:\tFailed to locate resource token dicts')
+
+	if len(ct_dicts) > 0:
+		ct_dict = ct_dicts[0]
+		for candidate_dict in ct_dicts[1:]
+			if os.path.getsize( os.path.join(msl_assets_folder, ct_dict) ) <
+			   os.path.getsize( os.path.join(msl_assets_folder,candidate_dict) ):
+				ct_dict = candidate_dict
+		ct_dict = json.load(open(os.path.join(msl_assets_folder,ct_dict)))
+		ct_dict = TokenDict(ct_dict)
+	else:
+		print('myScrapingLib:\tFailed to locate resource token dicts')
+else:
+	print('myScrapingLib:\tfailed to locate assets\\mslAssets\\ folder')
