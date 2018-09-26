@@ -88,8 +88,8 @@ if os.path.isdir(msl_assets_folder):
 	
 	if len(rt_dicts) > 0:
 		rt_dict = rt_dicts[0]
-		for candidate_dict in rt_dicts[1:]
-			if os.path.getsize( os.path.join(msl_assets_folder, rt_dict) ) <
+		for candidate_dict in rt_dicts[1:]:
+			if os.path.getsize( os.path.join(msl_assets_folder, rt_dict) ) < \
 			   os.path.getsize( os.path.join(msl_assets_folder,candidate_dict) ):
 				rt_dict = candidate_dict
 		rt_dict = json.load(open(os.path.join(msl_assets_folder,rt_dict)))
@@ -99,8 +99,8 @@ if os.path.isdir(msl_assets_folder):
 
 	if len(ct_dicts) > 0:
 		ct_dict = ct_dicts[0]
-		for candidate_dict in ct_dicts[1:]
-			if os.path.getsize( os.path.join(msl_assets_folder, ct_dict) ) <
+		for candidate_dict in ct_dicts[1:]:
+			if os.path.getsize( os.path.join(msl_assets_folder, ct_dict) ) < \
 			   os.path.getsize( os.path.join(msl_assets_folder,candidate_dict) ):
 				ct_dict = candidate_dict
 		ct_dict = json.load(open(os.path.join(msl_assets_folder,ct_dict)))
