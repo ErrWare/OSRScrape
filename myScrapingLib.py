@@ -145,7 +145,7 @@ def osrsAsNL(url):
 		for p in pars:
 			tokenizeLinks(p)
 		
-		natural_par = ' '.join(pars)
+		natural_par = ' '.join([p.text.strip() for p in pars])
 
 		# find trivia
 		trivia = soup.find(id='Trivia')
@@ -157,9 +157,12 @@ def osrsAsNL(url):
 			trivia_text = ' '.join([t.text.strip() for t in trivia])
 			natural_par = natural_par + ' ' + trivia_text
 		
+		#clean it up
+		natural_par.replace(u'\xa0', u' ')
 		return natural_par
-	except:
+	except Exception as e:
 		print('Failure converting url to natural language')
+		print(e)
 
 
 def demoPars(url):
