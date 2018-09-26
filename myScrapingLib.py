@@ -109,3 +109,25 @@ if os.path.isdir(msl_assets_folder):
 		print('myScrapingLib:\tFailed to locate resource token dicts')
 else:
 	print('myScrapingLib:\tfailed to locate assets\\mslAssets\\ folder')
+
+def disqualified(p):
+	if p.parent.name == 'figcaption':
+		return True
+	return False
+
+def demoPars(url):
+	soup = msl.getSoup(url)
+	article = soup.find(id='mw-content-text')
+	pars = article.findAll('p')
+	for index, p in enumerate(pars):
+		if p.parent.name != 'figcaption':
+			print(str(index)+':\t'+p.text[:30])
+	return pars
+
+def demo(url, **kwargs):
+	soup = msl.getSoup(url)
+	article = soup.find(id='mw-content-text')
+	tags = article.findAll(**kwargs)
+	for index, t in enumerate(tags):
+		print(str(index)+':\t'+t.text[:30])
+	return tags
