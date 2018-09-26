@@ -20,18 +20,18 @@ class TokenDict:
 	# I think the default value is interpreted once and saved as a
 	# reference to the initial empty dict
 	def __init__(self, dic={}):
-		self.myDict = dic.copy()
+		self.token_dict = dic.copy()
 
 	def getToken(self, key):
 		token = str(-1)
-		if key in self.myDict:
-			token = self.myDict[key]['token']
-			self.myDict[key]['accesses'] += 1
+		if key in self.token_dict:
+			token = self.token_dict[key]['token']
+			self.token_dict[key]['accesses'] += 1
 		else:
-			token = len(self.myDict)
-			self.myDict[key] = {}
-			self.myDict[key]['token'] = token
-			self.myDict[key]['accesses'] = 1
+			token = len(self.token_dict)
+			self.token_dict[key] = {}
+			self.token_dict[key]['token'] = token
+			self.token_dict[key]['accesses'] = 1
 		return str(token)
 
 # has overloaded functionality for getting article from url, might be too much
