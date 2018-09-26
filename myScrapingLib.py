@@ -113,7 +113,54 @@ else:
 def disqualified(p):
 	if p.parent.name == 'figcaption':
 		return True
+	if 'class' in p.parent.attrs and 'navbox-list' in p.parent.attrs['class']:
+		return True
+	if 'class' in p.attrs and p.attrs and 'caption' in p.attrs['class']:
+		return True
+	# hopefully this is better than checking length
+	if p.text.startswith('<'):
+		return True
+	# if len(p.text) > 600:
+	# 	return True
+	
 	return False
+
+def tokenizeLinks(tag):
+	for a in tag.find_all('a'):
+		if 'href' in a.attrs:
+			a.replace_with('rsrc'+rt_dict.getToken(a.attrs['href']))
+		else:
+			print('link w/o href in tag: ' + a.text)
+			a.replace_with(a.text)
+
+def osrsAsNL(url):
+	try:
+		soup = getSoup(url)
+	
+		article = soup.find()
+		pars = article.findAll('p')
+		pars = [p for p in pars if not disqualified(p)]
+
+		natural_par = ''
+		for p in pars:
+			tokenizeLinks(p)
+		
+		natural_par = ' '.join(pars)
+
+		# find trivia
+		trivia = soup.find(id='Trivia')
+		if trivia is not None:
+			trivia = trivia.parent.find_next_sibling('ul').find_all('li')
+			for trivia_item in trivia:
+				tokenizeLinks(trivia_item)
+		
+			trivia_text = ' '.join([t.text.strip() for t in trivia])
+			natural_par = natural_par + ' ' + trivia_text
+		
+		return natural_par
+	except:
+		print('Failure converting url to natural language')
+
 
 def demoPars(url):
 	soup = msl.getSoup(url)
