@@ -76,12 +76,14 @@ for (key,value) in tableDict.items():
 		entryCells = entry.find_all('td')
 		#assume first entry cell has link out
 		print(entryCells[0].find('a').attrs['href'])
-		resourceToken = msl.rt_dict.getToken(entryCells[0].find('a').attrs['href'])
+		entry_resource = entryCells[0].find('a').attrs['href']
+		resourceToken = msl.rt_dict.getToken(entry_resource)
 		equipmentDict[resourceToken] = {}
-
+		equipmentDict[resourceToken]['type'] = key	# key corresponding to equipment table type
 		for index, cell in enumerate(entryCells):
 			equipmentDict[resourceToken][column_names[index]] \
 				= cell.text.strip()
+		equipmentDict[resourceToken]['article-text'] = msl.osrsAsNL(wikiNS+entry_resource)
 
 with open('armory_v1.json','w') as armory_file:
 	armory_file.write(json.dumps(equipmentDict))
