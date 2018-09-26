@@ -4,9 +4,11 @@ Or Osiris Crêpe
 
 These are the basic python scripts I use(d) to scrape data from the OSRS wiki: http://oldschoolrunescape.wikia.com/wiki/Old_School_RuneScape_Wiki
 
-Main python libraries used: requests, bs4, json
-Some openpyxl when I began and decided to play with it, but since I've transferred to json.
+Main python libraries used: requests, bs4, json</br>
+Some openpyxl when I began and decided to play with it, but since I've transferred to json.</br>
 
-The ultimate goal is to create a semantic net of concepts in the OSRS game world. A lot of information can be gained by simply scraping the already fairly structured content of the wiki.
+The ultimate goal is to create a semantic net of concepts in the OSRS game world. A lot of information can be gained by simply scraping the already fairly structured content of the wiki.</br>
 
-However I would like to branch into extracting relationships and semantics from the wiki articles using NLP. I have a very very very very very rough idea of how to start, but by no means do I understand the state of the art. I've started learning basics with the nltk python library but if anyone has pointers or ideas or contributions please let me know.
+However I would like to branch into extracting relationships and semantics from the wiki articles using NLP. I have a very very very very very rough idea of how to start, but by no means do I understand the state of the art. I've started learning basics with the nltk python library but if anyone has pointers or ideas or contributions please let me know.</br>
+
+Eventually I will add the intermediary json and text files, and possibly even make an nltk compatible corpus of the wiki articles.
