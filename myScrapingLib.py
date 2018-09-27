@@ -35,6 +35,9 @@ class TokenDict:
 			self.token_dict[key]['accesses'] = 1
 		return str(token)
 
+	def __len__(self):
+		return len(self.token_dict)
+
 # has overloaded functionality for getting article from url, might be too much
 def getArticle(soup):
 	if type(soup) == type(''):
@@ -110,6 +113,15 @@ if os.path.isdir(msl_assets_folder):
 		print('myScrapingLib:\tFailed to locate resource token dicts')
 else:
 	print('myScrapingLib:\tfailed to locate assets\\mslAssets\\ folder')
+
+def saveTokenDicts():
+	with open(os.path.join(msl_assets_folder,'cat_tokens_dict_'+len(ct_dict)+'_CR.json'),'w') as f:
+		f.write(json.dumps(ct_dict.token_dict))
+	with open(os.path.join(msl_assets_folder,'rsrc_tokens_dict_'+len(rt_dict)+'_CR.json'),'w') as f:
+		f.write(json.dumps(rt_dict.token_dict))
+	print('TokenDicts updated')
+	
+
 
 def disqualified(p):
 	if p.parent.name == 'figcaption':
