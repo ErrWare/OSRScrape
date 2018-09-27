@@ -96,7 +96,10 @@ for (key,value) in tableDict.items():
 
 with open('armory_v2.json','w') as armory_file:
 	json_string = json.dumps(equipmentDict)
-	json_string = json_string.replace('\\u00a0',' ').replace('\\n',' ')
+	white_space_markers = ['\\u00a0', '\\n', '\\u2022']
+	for wsm in white_space_markers:
+		json_string.replace(wsm, ' ')
+	
 	armory_file.write(json_string)
 
 msl.saveTokenDicts()
