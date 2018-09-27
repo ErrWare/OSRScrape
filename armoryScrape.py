@@ -45,7 +45,7 @@ print('From		dict of table page uris')
 print('Making	dict of table heads and body elems')
 
 equipmentDict = {}
-
+i = 0
 for (key,value) in tableDict.items():
 	print(key + ' : ' + value)
 	tablePage = getSoup(value)
@@ -83,7 +83,16 @@ for (key,value) in tableDict.items():
 		for index, cell in enumerate(entryCells):
 			equipmentDict[resourceToken][column_names[index]] \
 				= cell.text.strip()
-		equipmentDict[resourceToken]['article-text'] = msl.osrsAsNL(wikiNS+entry_resource)
+		equipmentSoup = msl.getSoup(wikiNS+entry_resource)
+		info_box = msl.osrsInfoBox(equipmentSoup)
+		equipmentDict[resourceToken]['article-text'] = msl.osrsAsNL(equipmentSoup)
+		for key, val in info_box.items():
+			equipmentDict[resourceToken][key] = val
+
+		i += 1
+		if i == 10:
+			with open('armory_10_v1.json','w') as armory_file:
+				armory_file.write(json.dumps(equipmentDict))
 
 with open('armory_v1.json','w') as armory_file:
 	armory_file.write(json.dumps(equipmentDict))
