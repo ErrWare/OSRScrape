@@ -2,6 +2,7 @@ import requests, bs4
 import os
 import inspect
 import json
+import re
 
 def getSoup(url):
 	res = requests.get(url)
@@ -133,9 +134,13 @@ def tokenizeLinks(tag):
 			print('link w/o href in tag: ' + a.text)
 			a.replace_with(a.text)
 
-def osrsAsNL(url):
+# replaces article links with resource ids like rsrcTOKEN
+def osrsAsNL(urlORsoup):
 	try:
-		soup = getSoup(url)
+		if type(urlORsoup) == type(''):
+			soup = getSoup(urlORsoup)
+		else:
+			soup = urlORsoup
 	
 		article = soup.find()
 		pars = article.findAll('p')
@@ -163,7 +168,68 @@ def osrsAsNL(url):
 	except Exception as e:
 		print('Failure converting url to natural language')
 		print(e)
+		return 'ERROR: exception harvesting NL'
 
+def osrsInfoBox(urlORsoup):
+	try:
+		if type(urlORsoup) == type(''):
+			soup = getSoup(urlORsoup)
+		else:
+			soup = urlORsoup
+
+		info_box = soup.find('table', class_='infobox')
+
+		box_dict = {}
+		if info_box is not None:
+			box_dict['info-caption'] = info_box.find('caption').text.strip()
+
+			info_rows = info_box.find_all('tr')
+
+			for row in info_rows:
+				th = row.find('th')
+				if th is None:
+					continue
+				tds = row.find_all('td')
+				href = th.find('a', href=True)
+				if href is None:
+					href = ''
+				else:
+					href = href.attrs['href'].replace('/wiki/','').lower()
+				# Simple case - 1 cell desc, 1 cell value
+				if len(tds) == 1:
+					if href == 'Prices#Grand_Exchange_Guide_Price':
+						continue
+					box_dict[th.text.strip()] = tds[0].text.strip()
+				else:
+						
+					if href in ['examine', 'attack_style'] :
+						box_dict[href] = th.parent.find_next_sibling('tr').text.strip()
+					elif href == 'slayer_master':
+						box_dict['assigned_by'] = [rt_dict.getToken(a.attrs['href'])	\
+												for a in th.parent.find_next_sibling('tr').find_all('a',href=True)]
+					elif href in ['combat', 'attack', 'defence']:
+						stat_headers = th.parent.find_next_siblings('tr')[0].find_all('th')
+						stat_titles = [a.attrs['href'].lower for a in stat_headers.find_all('a',href=True)]
+						stat_tds   = th.parent.find_next_siblings('tr')[1].find_all('td')
+						stats = [td.text.strip() for td in stat_tds]
+						for title, stat in zip(stat_titles, stats):
+							box_dict[href+'_'+title] = stat
+					elif href == 'monster_attack_speed':
+						# attack speed displayed as a gif image... bs4 doesn't find <img> tag
+						asre = re.compile('Monster_attack_speed_([0-9]+)')
+						mo = asre.search(th.parent.find_next_sibling('tr').text)
+						box_dict['attack_speed'] = mo.group(1)
+					
+					else:
+						print('INFOBOX:\tUnparsed row:\t'+th.text.strip())
+		return box_dict
+
+	except Exception as e:
+		print('Failure converting url to natural language')
+		print(e)
+	
+	return {}
+	
 
 def demoPars(url):
 	soup = msl.getSoup(url)
