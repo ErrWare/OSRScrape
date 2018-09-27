@@ -69,6 +69,12 @@ def reverseDict(dic, key_att):
 
 	return retDic
 
+def categorizeDict(dic, cat_att):
+	retDic = {}
+	for key, val in dic.items():
+		retDic[tuple(val[cat_att])] = key
+	return retDic
+
 # gets the categories of some osrs wiki page
 def getCategories(soup):
 	categories = soup.find('ul',class_='categories')
@@ -115,9 +121,9 @@ else:
 	print('myScrapingLib:\tfailed to locate assets\\mslAssets\\ folder')
 
 def saveTokenDicts():
-	with open(os.path.join(msl_assets_folder,'cat_tokens_dict_'+len(ct_dict)+'_CR.json'),'w') as f:
+	with open(os.path.join(msl_assets_folder,'cat_tokens_dict_'+str(len(ct_dict))+'_CR.json'),'w') as f:
 		f.write(json.dumps(ct_dict.token_dict))
-	with open(os.path.join(msl_assets_folder,'rsrc_tokens_dict_'+len(rt_dict)+'_CR.json'),'w') as f:
+	with open(os.path.join(msl_assets_folder,'rsrc_tokens_dict_'+str(len(rt_dict))+'_CR.json'),'w') as f:
 		f.write(json.dumps(rt_dict.token_dict))
 	print('TokenDicts updated')
 	
@@ -233,7 +239,7 @@ def osrsInfoBox(urlORsoup):
 						box_dict['attack_speed'] = mo.group(1)
 					
 					else:
-						print('INFOBOX:\tUnparsed row:\t'+th.text.strip())
+						print('INFOBOX:\tUnparsed row header:\t'+th.text.strip())
 		return box_dict
 
 	except Exception as e:
