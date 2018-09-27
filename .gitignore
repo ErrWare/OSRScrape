@@ -7,4 +7,4 @@ saved_soup
 __pycache__
 *.json
 !**CR.json
-!armory_v1.json
+!armory_v2.json
