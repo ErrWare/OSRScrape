@@ -91,8 +91,12 @@ for (key,value) in tableDict.items():
 
 		i += 1
 		if i == 10:
-			with open('armory_10_v1.json','w') as armory_file:
+			with open('armory_10_v2.json','w') as armory_file:
 				armory_file.write(json.dumps(equipmentDict))
 
-with open('armory_v1.json','w') as armory_file:
-	armory_file.write(json.dumps(equipmentDict))
+with open('armory_v2.json','w') as armory_file:
+	json_string = json.dumps(equipmentDict)
+	json_string = json_string.replace('\\u00a0',' ').replace('\\n',' ')
+	armory_file.write(json_string)
+
+msl.saveTokenDicts()
