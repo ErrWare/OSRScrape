@@ -6,5 +6,5 @@ saved_soup
 .vscode
 __pycache__
 *.json
-!**CR.json
+!**[^4]..CR.json
 !armory_v2.json
