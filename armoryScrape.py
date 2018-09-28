@@ -46,8 +46,9 @@ print('Making	dict of table heads and body elems')
 
 equipmentDict = {}
 i = 0
-for (key,value) in tableDict.items():
-	print(key + ' : ' + value)
+print(tableDict.keys())
+for (tableType,value) in tableDict.items():
+	print(tableType + ' : ' + value)
 	tablePage = getSoup(value)
 	tableInPage = tablePage.select('table[class~=wikitable]')[0]
 	body = tableInPage.find('tbody')
@@ -79,7 +80,8 @@ for (key,value) in tableDict.items():
 		entry_resource = entryCells[0].find('a').attrs['href']
 		resourceToken = msl.rt_dict.getToken(entry_resource)
 		equipmentDict[resourceToken] = {}
-		equipmentDict[resourceToken]['type'] = key	# key corresponding to equipment table type
+		equipmentDict[resourceToken]['type'] = tableType	# key corresponding to equipment table type
+
 		for index, cell in enumerate(entryCells):
 			equipmentDict[resourceToken][column_names[index]] \
 				= cell.text.strip()
@@ -98,7 +100,7 @@ with open('armory_v2.json','w') as armory_file:
 	json_string = json.dumps(equipmentDict)
 	white_space_markers = ['\\u00a0', '\\n', '\\u2022']
 	for wsm in white_space_markers:
-		json_string.replace(wsm, ' ')
+		json_string = json_string.replace(wsm, ' ')
 	
 	armory_file.write(json_string)
 
