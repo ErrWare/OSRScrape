@@ -4,6 +4,9 @@ import inspect
 import json
 import re
 
+
+rsns = 'http://oldschoolrunescape.wikia.com'
+
 def getSoup(url):
 	res = requests.get(url)
 	try:
@@ -185,7 +188,8 @@ def osrsAsNL(urlORsoup):
 		return natural_par
 	except Exception as e:
 		print('Failure converting url to natural language')
-		print(e)
+		print(type(e))
+		print('end of error log~~~~')
 		return 'ERROR: exception harvesting NL'
 
 def osrsInfoBox(urlORsoup):
@@ -207,13 +211,13 @@ def osrsInfoBox(urlORsoup):
 				th = row.find('th')
 				if th is None:
 					continue
-				tds = row.find_all('td')
 				href = th.find('a', href=True)
 				if href is None:
 					href = ''
 				else:
 					href = href.attrs['href'].replace('/wiki/','').lower()
 				# Simple case - 1 cell desc, 1 cell value
+				tds = row.find_all('td')
 				if len(tds) == 1:
 					if href == 'Prices#Grand_Exchange_Guide_Price':
 						continue
@@ -221,13 +225,14 @@ def osrsInfoBox(urlORsoup):
 				else:
 						
 					if href in ['examine', 'attack_style'] :
-						box_dict[href] = th.parent.find_next_sibling('tr').text.strip()
+						info_cell = th.parent.find_next_sibling('tr')
+						box_dict[href] = info_cell.text.strip()
 					elif href == 'slayer_master':
 						box_dict['assigned_by'] = [rt_dict.getToken(a.attrs['href'])	\
-												for a in th.parent.find_next_sibling('tr').find_all('a',href=True)]
-					elif href in ['combat', 'attack', 'defence']:
-						stat_headers = th.parent.find_next_siblings('tr')[0].find_all('th')
-						stat_titles = [a.attrs['href'].lower for a in stat_headers.find_all('a',href=True)]
+												  for a in th.parent.find_next_sibling('tr').find_all('a',href=True)]
+					elif href in ['combat', 'attack', 'defence'] or th.text.strip() == 'Other bonuses':
+						stat_headers = th.parent.find_next_siblings('tr')[0].find_all('a', href=True)
+						stat_titles = [a.attrs['href'].lower() for a in stat_headers]
 						stat_tds   = th.parent.find_next_siblings('tr')[1].find_all('td')
 						stats = [td.text.strip() for td in stat_tds]
 						for title, stat in zip(stat_titles, stats):
@@ -236,14 +241,17 @@ def osrsInfoBox(urlORsoup):
 						# attack speed displayed as a gif image... bs4 doesn't find <img> tag
 						asre = re.compile('Monster_attack_speed_([0-9]+)')
 						mo = asre.search(th.parent.find_next_sibling('tr').text)
-						box_dict['attack_speed'] = mo.group(1)
+						try:
+							box_dict['attack_speed'] = mo.group(1)
+						except:
+							box_dict['attack_speed'] = 'unknown'
 					
 					else:
-						print('INFOBOX:\tUnparsed row header:\t'+th.text.strip())
+						print('INFOBOX:\tUnparsed row header:\t'+th.text.strip()[:20]+'~')
 		return box_dict
 
 	except Exception as e:
-		print('Failure converting url to natural language')
+		print('Failure converting INFOBOX')
 		print(e)
 	
 	return {}
@@ -265,3 +273,11 @@ def demo(url, **kwargs):
 	for index, t in enumerate(tags):
 		print(str(index)+':\t'+t.text[:30])
 	return tags
+
+def removeUnicodes(string):
+	white_space_markers = ['\\u00a0', '\\n', '\\u2022']
+	for wsm in white_space_markers:
+		string = string.replace(wsm, ' ')
+
+	string = string.replace('\\u2013', '-')
+	return string
