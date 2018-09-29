@@ -88,6 +88,19 @@ def getCategories(soup):
 		categories = [a.attrs['href'] for a in categories.select('a')]
 		return set(categories)
 
+# gets links out of some osrs wiki page
+def getOutLinks(article):
+	# Only articles relevant to text are those without a class attribute
+	# class attribute denotes an image, we can do away with that.
+	links = set(a.attrs['href'] for a in mainArticle.select('a[href]') if 'class' not in a.attrs)
+	
+	# these substrings are found in hrefs we are uninterested in
+	badSubStrings = ['?action=',':']	#'Exchange:','Update:','Poll:']
+	for badSubString in badSubStrings:
+		links = set(href for href in links if badSubString not in href)
+	
+	return list(links)
+
 
 # Load token dicts
 ASSETS_FOLDER_NAME = 'assets'
