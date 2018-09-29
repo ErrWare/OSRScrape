@@ -1,7 +1,7 @@
 import myScrapingLib as msl
 import requests, json, bs4
 
-home_lists = ['/wiki/Category:Bestiary', '/wiki/Category:Non-player_characters']
+home_lists = ['/wiki/Category:Non-player_characters','/wiki/Category:Bestiary']
 
 testWrite = True
 
@@ -83,4 +83,4 @@ with open('npcs_v1.json', 'w') as npcFile:
 	npcFile.write(json_string)
 
 
-#msl.saveTokenDicts()
+msl.saveTokenDicts()

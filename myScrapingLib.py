@@ -232,7 +232,7 @@ def osrsInfoBox(urlORsoup):
 												  for a in th.parent.find_next_sibling('tr').find_all('a',href=True)]
 					elif href in ['combat', 'attack', 'defence'] or th.text.strip() == 'Other bonuses':
 						stat_headers = th.parent.find_next_siblings('tr')[0].find_all('a', href=True)
-						stat_titles = [a.attrs['href'].lower() for a in stat_headers]
+						stat_titles = [a.attrs['href'].lower().replace('/wiki/','') for a in stat_headers]
 						stat_tds   = th.parent.find_next_siblings('tr')[1].find_all('td')
 						stats = [td.text.strip() for td in stat_tds]
 						for title, stat in zip(stat_titles, stats):
