@@ -87,9 +87,9 @@ for (tableType,value) in tableDict.items():
 				= cell.text.strip()
 		equipmentSoup = msl.getSoup(wikiNS+entry_resource)
 		info_box = msl.osrsInfoBox(equipmentSoup)
-		equipmentDict[resourceToken]['article-text'] = msl.osrsAsNL(equipmentSoup)
 		for key, val in info_box.items():
 			equipmentDict[resourceToken][key] = val
+		equipmentDict[resourceToken]['article-text'] = msl.osrsAsNL(equipmentSoup)
 
 		i += 1
 		if i == 10:
