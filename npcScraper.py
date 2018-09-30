@@ -1,12 +1,13 @@
 import myScrapingLib as msl
 import requests, json, bs4
 
-home_lists = ['/wiki/Category:Non-player_characters','/wiki/Category:Bestiary']
+home_lists = ['/wiki/Category:Items','/wiki/Category:Non-player_characters','/wiki/Category:Bestiary']
 
 testWrite = True
 
-npcDict = {}
 for index, home_list in enumerate(home_lists):
+	fileName = home_list.split(':')[-1]
+	npcDict = {}
 	soup = msl.getSoup(msl.rsns + home_list)
 	main_section = soup.find(id='mw-pages')
 	print('next section: ' + str(main_section.find('a',text='next 200')))
@@ -77,7 +78,7 @@ for index, home_list in enumerate(home_lists):
 				npcFile.write(json_string)
 	
 
-with open('npcs_v1.json', 'w') as npcFile:
+with open(fileName+'_v1.json', 'w') as npcFile:
 	json_string = json.dumps(npcDict)
 	json_string = msl.removeUnicodes(json_string)
 	npcFile.write(json_string)
