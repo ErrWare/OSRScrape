@@ -18,7 +18,7 @@ I have added the latest json files. They are in a fairly structured format, but 
 org.errware.silentscribe.jar :</br>
 Single class library for scraping information directly from RS in conjunction with the DreamBot framework. Singleton design pattern with multiple threads for world-state observation.
 
-npcs_v1.json & armory_v2.json :</br>
+npcs_v1.json, Bestiary_v1.json, Items_v1.json, armory_v2.json :</br>
 Currently the most structured formatting of scraped data from the osrs wikia wiki.
 
 myScrapingLib.py :</br>
