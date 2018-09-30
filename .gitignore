@@ -6,7 +6,7 @@ saved_soup
 .vscode
 __pycache__
 *.json
-!**8195_CR.json
+!**8922_CR.json
 !armory_v2.json
 !npcs_v1.json
 !Bestiary_v1.json
